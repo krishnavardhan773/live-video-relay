@@ -47,6 +47,42 @@ def live():
         mimetype="video/mp2t"
     )
 
+
+@app.route("/player")
+def player():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Live Video Player</title>
+        <script src="https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js"></script>
+    </head>
+    <body>
+        <h2>Live Video Stream</h2>
+
+        <video id="video" controls autoplay muted style="width: 90%; max-width: 900px;"></video>
+
+        <script>
+            if (mpegts.getFeatureList().mseLivePlayback) {
+                var videoElement = document.getElementById('video');
+
+                var player = mpegts.createPlayer({
+                    type: 'mpegts',
+                    isLive: true,
+                    url: '/live'
+                });
+
+                player.attachMediaElement(videoElement);
+                player.load();
+                player.play();
+            } else {
+                document.body.innerHTML += "<p>Your browser does not support MPEG-TS playback.</p>";
+            }
+        </script>
+    </body>
+    </html>
+    """
+
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5001))
